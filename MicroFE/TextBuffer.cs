@@ -57,14 +57,14 @@ namespace MicroFE
             _titleFontBrush = new SolidBrush(Color.DarkGreen);
             _brushCache = new Dictionary<int, Brush>();
 
-            CharHeight = (int)_titleFont.GetHeight();
+            CharHeight = (int)_titleFont.GetHeight()-4;
 
             using (var tmpBitmap = new Bitmap(1, 1))
             {
                 using (var tmpGfx = Graphics.FromImage(tmpBitmap))
                 {
                     var stringSize = tmpGfx.MeasureString("─", _titleFont);
-                    CharWidth = (int)stringSize.Width;
+                    CharWidth = (int)stringSize.Width-10;
                 }
             }
 
@@ -92,7 +92,7 @@ namespace MicroFE
                 using (var context = Graphics.FromImage(b))
                 {
                     context.TextRenderingHint = TextRenderingHint.SingleBitPerPixel;
-                    context.DrawString(c.ToString(), _titleFont, GetBrush(color), 0, 0);
+                    context.DrawString(c.ToString(), _titleFont, GetBrush(color), 0, 0, StringFormat.GenericTypographic);
                 }
 
 
@@ -158,11 +158,10 @@ namespace MicroFE
 
                         if (_bufferColors[i] != default(Color) && _buffer[i] != default(char))
                         {
+
                             var bmp = GetBitmap(_bufferColors[i], _buffer[i]);
                             _backBufferContext.DrawImage(bmp, (i % TextCols) * CharWidth, (i / TextCols) * CharHeight);
                         }
-
-
                     }
                     g.Clear(Color.Black);
 

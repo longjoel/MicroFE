@@ -105,7 +105,7 @@ namespace MicroFE
 
             int mx = SelectedIndex - availableSlots / 2;
             if (mx < 0) mx = 0;
-            if (mx >= Items.Count()-availableSlots) mx = Items.Count()-availableSlots;
+            if (mx >= Items.Count() - availableSlots) mx = Items.Count() - availableSlots;
 
 
             for (int i = 0; i < availableSlots; i++)
@@ -124,31 +124,7 @@ namespace MicroFE
                     TextBuffer.PutString(cursorX, cursorY, TextColor, Items[mx]);
                 }
                 mx++;
-
             }
-
-
-
-            //int minMenuItem = Math.Max(0, SelectedIndex - availableSlots ); // 
-            //int maxMenuItem = Math.Min(Items.Count(), minMenuItem + availableSlots-1);
-
-            //for (int i = minMenuItem; i < maxMenuItem; i++)
-            //{
-            //    int cursorX = X+1;
-            //    int cursorY = Y+3 + (i - minMenuItem);
-
-            //    if (i == SelectedIndex)
-            //    {
-            //        TextBuffer.PaintBackground(cursorX, cursorY, Width - 2, 1, SelectedTextBackgroundColor);
-            //        TextBuffer.PutString(cursorX, cursorY, SelectedTextColor,  Items[i]);
-            //    }
-            //    else
-            //    {
-            //        TextBuffer.PutString(cursorX, cursorY, TextColor, Items[i]);
-            //    }
-
-            //}
-
         }
 
         public void MoveCursorUp() { if (SelectedIndex > 0) SelectedIndex--; }

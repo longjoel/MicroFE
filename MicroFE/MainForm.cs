@@ -27,61 +27,20 @@ namespace MicroFE
 
             _root = new TreeNode()
             {
-                ["Scripts"] = new TreeNode()
-                {
-                    ["A"] = new TreeNode()
-                    {
-                        ["a"] = new TreeNode() {OnSelect = new Action(()=> { _menuStack.Last().Height = 10; }) },
-                        ["b"] = new TreeNode(),
-                        ["c"] = new TreeNode(),
-                        ["d"] = new TreeNode(),
-                        ["e"] = new TreeNode(),
-                        ["f"] = new TreeNode(),
-                        ["g"] = new TreeNode(),
-                        ["h"] = new TreeNode(),
-                        ["i"] = new TreeNode(),
-                        ["j"] = new TreeNode(),
-                        ["k"] = new TreeNode(),
-                        ["l"] = new TreeNode(),
-                        ["m"] = new TreeNode(),
-                        ["n"] = new TreeNode(),
-                        ["o"] = new TreeNode(),
-                        ["p"] = new TreeNode(),
-                        ["q"] = new TreeNode(),
-                        ["r"] = new TreeNode(),
-                        ["s"] = new TreeNode(),
-                        ["t"] = new TreeNode(),
-                        ["u"] = new TreeNode(),
-                        ["v"] = new TreeNode(),
-                        ["w"] = new TreeNode(),
-                        ["x"] = new TreeNode(),
-                        ["y"] = new TreeNode(),
-                        ["z"] = new TreeNode(),
-                    },
-                    ["B"] = new TreeNode() { },
-                    ["C"] = new TreeNode() { },
-                    ["D"] = new TreeNode() { },
-                },
+                
                 ["Quit"] = new TreeNode() { OnSelect = new Action(() => { Application.Exit(); }) }
             };
 
 
             _menuStack = new List<TextMenu>();
-
             var tmView = new TextMenu(_buffer, 0, 0, TextBuffer.TextCols, TextBuffer.TextRows, "[Micro FE - Main Menu]")
             {
-
-
                 Items = _root.Keys.ToArray(),
                 SelectedIndex = 0,
-
-
             };
 
             _nodePath.Add(_root);
             _menuStack.Add(tmView);
-
-
         }
 
         protected override void OnKeyUp(KeyEventArgs e)

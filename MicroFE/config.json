@@ -1,0 +1,47 @@
+﻿{
+  "Actions": [
+    {
+      "Name": "Launch RetroArch Gui",
+      "WorkingDirectory": "c:/Emulation/RetroArch/",
+      "Path": "c:/Emulaton/RetroArch/RetroArch.exe",
+      "Args": [ ]
+    },
+    {
+      "Name": "Launch KODI",
+      "WorkingDirectory": "c:/Media/Kodi/",
+      "Path": "c:/Media/Kodi/Kodi.exe",
+      "Args": [ "-fullscreen" ]
+    }
+
+  ],
+  "Emulators": [
+    {
+      "System": "Nintendo Entertainment System",
+      "WorkingDirectory": "c:/Emulation/RetroArch/",
+      "EmuPath": "c:/Emulaton/RetroArch/RetroArch.exe",
+      "EmuArgs": [
+        "-L",
+        "c:/Emulation/RetroArch/Cores/Fceumm.dll", 
+        "%ROM%" ],
+      "RomPath": "c:/Emulation/Roms/NES/",
+      "RomFilter": [".zip", ".nes" ]
+    },
+    {
+      "System": "Nintendo Wii",
+      "WorkingDirectory": "c:/Emulation/Dolphin/",
+      "EmuPath": "c:/Emulaton/Dolphin/Dolphin.exe",
+      "EmuArgs": [ "-b", "%ROM%" ],
+      "RomPath": "c:/Emulation/Roms/Wii/",
+      "RomFilter": [".iso", ".gcm" ]
+    },
+    {
+      "System": "Nintendo GameCube",
+      "WorkingDirectory": "c:/Emulation/Dolphin/",
+      "EmuPath": "c:/Emulaton/Dolphin/Dolphin.exe",
+      "EmuArgs": [ "-b", "%ROM%" ],
+      "RomPath": "c:/Emulation/Roms/GameCube/",
+      "RomFilter": [".iso", ".gcm" ]
+    }
+  ]
+
+}
