@@ -17,7 +17,7 @@ namespace MicroFE
         /// <summary>
         /// 
         /// </summary>
-        public const int TextCols = 80;
+        public const int TextCols = 120;
 
         /// <summary>
         /// 
@@ -47,8 +47,6 @@ namespace MicroFE
         Graphics _backBufferContext;
 
         Dictionary<int, Bitmap> _fontCache;
-
-        // These get cached because 
         Dictionary<int, Brush> _brushCache;
 
         public TextBuffer()
@@ -57,14 +55,14 @@ namespace MicroFE
             _titleFontBrush = new SolidBrush(Color.DarkGreen);
             _brushCache = new Dictionary<int, Brush>();
 
-            CharHeight = (int)_titleFont.GetHeight()-4;
+            CharHeight = (int)_titleFont.GetHeight();
 
             using (var tmpBitmap = new Bitmap(1, 1))
             {
                 using (var tmpGfx = Graphics.FromImage(tmpBitmap))
                 {
                     var stringSize = tmpGfx.MeasureString("─", _titleFont);
-                    CharWidth = (int)stringSize.Width-10;
+                    CharWidth = (int)stringSize.Width;
                 }
             }
 
@@ -89,10 +87,23 @@ namespace MicroFE
             if (!_fontCache.TryGetValue(new Tuple<Color, char>(color, c).GetHashCode(), out b))
             {
                 b = new Bitmap(CharWidth, CharHeight);
-                using (var context = Graphics.FromImage(b))
+                using (var bx = new Bitmap(CharWidth, CharHeight))
                 {
-                    context.TextRenderingHint = TextRenderingHint.SingleBitPerPixel;
-                    context.DrawString(c.ToString(), _titleFont, GetBrush(color), 0, 0, StringFormat.GenericTypographic);
+                    using (var context = Graphics.FromImage(bx))
+                    {
+                        context.TextRenderingHint = TextRenderingHint.SingleBitPerPixelGridFit;
+                      
+                        context.DrawString(c.ToString(), _titleFont, GetBrush(color), 0, 0, StringFormat.GenericTypographic);
+                       
+                    }
+
+                    using(var context = Graphics.FromImage(b))
+                    {
+                        context.DrawImage(bx,  
+                            new Rectangle(0,0,CharWidth, CharHeight), 
+                            new Rectangle(2, 2, CharWidth - 14, CharHeight - 4), 
+                            GraphicsUnit.Pixel);
+                    }
                 }
 
 
