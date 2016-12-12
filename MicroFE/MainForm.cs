@@ -25,11 +25,8 @@ namespace MicroFE
             _buffer = new TextBuffer();
             _nodePath = new List<TreeNode>();
 
-            _root = new TreeNode()
-            {
-                
-                ["Quit"] = new TreeNode() { OnSelect = new Action(() => { Application.Exit(); }) }
-            };
+            _root = ConfigFileParser.ParseConfigFile("config.json");
+           
 
 
             _menuStack = new List<TextMenu>();
@@ -94,7 +91,7 @@ namespace MicroFE
         protected override void OnPaint(PaintEventArgs e)
         {
 
-            _menuStack.ForEach(d => d.Draw());//.Last().Draw();
+            _menuStack.ForEach(d => d.Draw());
             try
             {
                 _buffer.RenderTextBuffer(e.Graphics, new Rectangle(0, 0, Width, Height));

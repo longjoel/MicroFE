@@ -17,30 +17,16 @@
   "Emulators": [
     {
       "System": "Nintendo Entertainment System",
-      "WorkingDirectory": "c:/Emulation/RetroArch/",
-      "EmuPath": "c:/Emulaton/RetroArch/RetroArch.exe",
+      "WorkingDirectory": "C:/Games/Emulation/Emulators/retroarch",
+      "EmuPath": "C:/Games/Emulation/Emulators/retroarch/RetroArch.exe",
       "EmuArgs": [
+        "-f",
         "-L",
-        "c:/Emulation/RetroArch/Cores/Fceumm.dll", 
-        "%ROM%" ],
-      "RomPath": "c:/Emulation/Roms/NES/",
-      "RomFilter": [".zip", ".nes" ]
-    },
-    {
-      "System": "Nintendo Wii",
-      "WorkingDirectory": "c:/Emulation/Dolphin/",
-      "EmuPath": "c:/Emulaton/Dolphin/Dolphin.exe",
-      "EmuArgs": [ "-b", "%ROM%" ],
-      "RomPath": "c:/Emulation/Roms/Wii/",
-      "RomFilter": [".iso", ".gcm" ]
-    },
-    {
-      "System": "Nintendo GameCube",
-      "WorkingDirectory": "c:/Emulation/Dolphin/",
-      "EmuPath": "c:/Emulaton/Dolphin/Dolphin.exe",
-      "EmuArgs": [ "-b", "%ROM%" ],
-      "RomPath": "c:/Emulation/Roms/GameCube/",
-      "RomFilter": [".iso", ".gcm" ]
+        "C:/Games/Emulation/Emulators/retroarch/Cores/nestopia_libretro.dll",
+        "%ROM%"
+      ],
+      "RomPath": "C:/Games/Emulation/Roms/Nes",
+      "RomFilter": [ ".zip", ".nes" ]
     }
   ]
 
