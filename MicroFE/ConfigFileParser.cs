@@ -47,7 +47,7 @@ namespace MicroFE
                         {
                             var startInfo = new ProcessStartInfo()
                             {
-                                Arguments = string.Join(" ", action.Args),
+                                Arguments = string.Join(" ", action.Args?? ""),
                                 FileName = action.Path,
                                 WorkingDirectory = action.WorkingDirectory
                             };
@@ -79,7 +79,7 @@ namespace MicroFE
                             {
                                 Arguments = string.Join(" ", emulator.EmuArgs),
                                 FileName = "\"" + emulator.EmuPath + "\"",
-                                WorkingDirectory = "\"" + emulator.WorkingDirectory+ "\"" 
+                                WorkingDirectory = "\"" + emulator.WorkingDirectory + "\""
                             };
 
                             startInfo.Arguments = startInfo.Arguments.Replace("%ROM%", "\"" + r + "\"");

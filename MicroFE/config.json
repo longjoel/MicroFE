@@ -2,17 +2,11 @@
   "Actions": [
     {
       "Name": "Launch RetroArch Gui",
-      "WorkingDirectory": "c:/Emulation/RetroArch/",
-      "Path": "c:/Emulaton/RetroArch/RetroArch.exe",
-      "Args": [ ]
-    },
-    {
-      "Name": "Launch KODI",
-      "WorkingDirectory": "c:/Media/Kodi/",
-      "Path": "c:/Media/Kodi/Kodi.exe",
-      "Args": [ "-fullscreen" ]
+      
+      "Path": "C:/Games/Emulation/Emulators/retroarch/RetroArch.exe"
+      
     }
-
+  
   ],
   "Emulators": [
     {

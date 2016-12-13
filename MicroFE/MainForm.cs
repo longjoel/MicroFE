@@ -26,8 +26,6 @@ namespace MicroFE
             _nodePath = new List<TreeNode>();
 
             _root = ConfigFileParser.ParseConfigFile("config.json");
-           
-
 
             _menuStack = new List<TextMenu>();
             var tmView = new TextMenu(_buffer, 0, 0, TextBuffer.TextCols, TextBuffer.TextRows, "[Micro FE - Main Menu]")
@@ -63,40 +61,40 @@ namespace MicroFE
 
             if (e.KeyCode == Keys.Right)
             {
-                var currentMenu = _menuStack.Last();
-                var nextNode = _nodePath.Last()[currentMenu.Items[currentMenu.SelectedIndex]];
-
-                if (nextNode.OnSelect != null)
-                {
-                    nextNode.OnSelect();
-                }
-                else if (nextNode.Any())
-                {
-                    _nodePath.Add(nextNode);
-                    var tm = new TextMenu(_buffer,
-                        _nodePath.Count + 1,
-                        0,
-                        TextBuffer.TextCols - _nodePath.Count -1,
-                        TextBuffer.TextRows ,
-                        currentMenu.Items[currentMenu.SelectedIndex]);
-                    tm.Items = nextNode.Keys.ToArray();
-                    _menuStack.Add(tm);
-                }
+                HandlePropertyActivated();
             }
 
             Invalidate();
             base.OnKeyUp(e);
         }
 
+        private void HandlePropertyActivated()
+        {
+            var currentMenu = _menuStack.Last();
+            var nextNode = _nodePath.Last()[currentMenu.Items[currentMenu.SelectedIndex]];
+
+            if (nextNode.OnSelect != null)
+            {
+                nextNode.OnSelect();
+            }
+            else if (nextNode.Any())
+            {
+                _nodePath.Add(nextNode);
+                var tm = new TextMenu(_buffer,
+                    _nodePath.Count + 1,
+                    0,
+                    TextBuffer.TextCols - _nodePath.Count - 1,
+                    TextBuffer.TextRows,
+                    currentMenu.Items[currentMenu.SelectedIndex]);
+                tm.Items = nextNode.Keys.ToArray();
+                _menuStack.Add(tm);
+            }
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
-
             _menuStack.ForEach(d => d.Draw());
-            try
-            {
-                _buffer.RenderTextBuffer(e.Graphics, new Rectangle(0, 0, Width, Height));
-            }
-            catch { }
+            _buffer.RenderTextBuffer(e.Graphics, new Rectangle(0, 0, Width, Height));
             base.OnPaint(e);
         }
 

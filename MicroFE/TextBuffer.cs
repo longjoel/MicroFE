@@ -51,7 +51,7 @@ namespace MicroFE
 
         public TextBuffer()
         {
-            _titleFont = new Font(FontFamily.GenericMonospace, 32, FontStyle.Bold, GraphicsUnit.Pixel);
+            _titleFont = new Font(FontFamily.GenericMonospace, 48, FontStyle.Bold, GraphicsUnit.Pixel);
             _titleFontBrush = new SolidBrush(Color.DarkGreen);
             _brushCache = new Dictionary<int, Brush>();
 
@@ -93,7 +93,12 @@ namespace MicroFE
                     {
                         context.TextRenderingHint = TextRenderingHint.SingleBitPerPixelGridFit;
                       
-                        context.DrawString(c.ToString(), _titleFont, GetBrush(color), 0, 0, StringFormat.GenericTypographic);
+                        context.DrawString(c.ToString(), _titleFont, GetBrush(color), 0, 0, new StringFormat() {
+                            Alignment = StringAlignment.Near,
+                            FormatFlags = StringFormatFlags.NoClip|StringFormatFlags.NoWrap,
+                            LineAlignment = StringAlignment.Near,
+                            Trimming = StringTrimming.Character
+                        });
                        
                     }
 
@@ -101,7 +106,7 @@ namespace MicroFE
                     {
                         context.DrawImage(bx,  
                             new Rectangle(0,0,CharWidth, CharHeight), 
-                            new Rectangle(2, 2, CharWidth - 14, CharHeight - 4), 
+                            new Rectangle(8, 3, CharWidth-16 , CharHeight-6 ), 
                             GraphicsUnit.Pixel);
                     }
                 }
@@ -169,7 +174,8 @@ namespace MicroFE
 
                         if (_bufferColors[i] != default(Color) && _buffer[i] != default(char))
                         {
-
+                            //_backBufferContext.DrawRectangle(Pens.White,
+                            // new Rectangle((int)(i % TextCols) * CharWidth, (int)(i / TextCols) * CharHeight, CharWidth, CharHeight));
                             var bmp = GetBitmap(_bufferColors[i], _buffer[i]);
                             _backBufferContext.DrawImage(bmp, (i % TextCols) * CharWidth, (i / TextCols) * CharHeight);
                         }
