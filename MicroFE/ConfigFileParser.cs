@@ -41,19 +41,26 @@ namespace MicroFE
                 foreach (var action in jsonRoot.Actions)
                 {
                     var actionNode = root["Actions"];
-                    actionNode[(string)action.Name] = new TreeNode()
+                    if (File.Exists((string)action.Path))
                     {
-                        OnSelect = new Action(() =>
+                        actionNode[(string)action.Name] = new TreeNode()
                         {
-                            var startInfo = new ProcessStartInfo()
+                            OnSelect = new Action(() =>
                             {
-                                Arguments = string.Join(" ", action.Args?? ""),
-                                FileName = action.Path,
-                                WorkingDirectory = action.WorkingDirectory
-                            };
-                            Process.Start(startInfo);
-                        })
-                    };
+                                var startInfo = new ProcessStartInfo()
+                                {
+                                    Arguments = string.Join(" ", action.Args ?? ""),
+                                    FileName = action.Path,
+                                    WorkingDirectory = action.WorkingDirectory
+                                };
+                                Process.Start(startInfo);
+                            })
+                        };
+                    }
+                    else
+                    {
+                        actionNode[(string)action.Name] = new TreeNode();
+                    }
                 }
             }
         }
@@ -66,29 +73,31 @@ namespace MicroFE
                 foreach (var emulator in jsonRoot.Emulators)
                 {
                     root[(string)emulator.System] = new TreeNode() { };
-
-                    var roms = Directory.GetFiles((string)emulator.RomPath);
-
-                    foreach (var r in roms)
+                    if (Directory.Exists((string)emulator.RomPath))
                     {
-                        var n = new TreeNode();
+                        var roms = Directory.GetFiles((string)emulator.RomPath);
 
-                        n.OnSelect = new Action(() =>
+                        foreach (var r in roms)
                         {
-                            var startInfo = new ProcessStartInfo()
+                            var n = new TreeNode();
+
+                            n.OnSelect = new Action(() =>
                             {
-                                Arguments = string.Join(" ", emulator.EmuArgs),
-                                FileName = "\"" + emulator.EmuPath + "\"",
-                                WorkingDirectory = "\"" + emulator.WorkingDirectory + "\""
-                            };
+                                var startInfo = new ProcessStartInfo()
+                                {
+                                    Arguments = string.Join(" ", emulator.EmuArgs),
+                                    FileName = "\"" + emulator.EmuPath + "\"",
+                                    WorkingDirectory = "\"" + emulator.WorkingDirectory + "\""
+                                };
 
-                            startInfo.Arguments = startInfo.Arguments.Replace("%ROM%", "\"" + r + "\"");
+                                startInfo.Arguments = startInfo.Arguments.Replace("%ROM%", "\"" + r + "\"");
 
-                            Process.Start(startInfo);
-                        });
+                                Process.Start(startInfo);
+                            });
 
 
-                        root[(string)emulator.System][Path.GetFileNameWithoutExtension(r)] = n;
+                            root[(string)emulator.System][Path.GetFileNameWithoutExtension(r)] = n;
+                        }
                     }
 
 
