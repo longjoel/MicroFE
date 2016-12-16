@@ -50,6 +50,8 @@ namespace MicroFE
                     TitleColor = Color.Green
                 };
             }
+            else { Theme = theme; }
+
             X = x;
             Y = y;
 
