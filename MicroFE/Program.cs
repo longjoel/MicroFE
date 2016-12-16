@@ -18,7 +18,7 @@ namespace MicroFE
            
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            new VideoWindow().Run();
         }
     }
 }

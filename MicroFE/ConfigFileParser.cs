@@ -25,7 +25,7 @@ namespace MicroFE
 
             ParseActions(root, jsonRoot);
 
-            root["Quit"] = new TreeNode() { OnSelect = new Action(() => { Application.Exit(); }) };
+            root["Quit"] = new TreeNode() { OnSelect = new Action(() => { Environment.Exit(0); }) };
 
             return root;
 
