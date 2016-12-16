@@ -35,10 +35,10 @@ namespace MicroFE
 
             _root = root; ConfigFileParser.ParseConfigFile("config.json");
 
-            _theme = theme;  ConfigFileParser.ParseMenuTheme("config.json");
+            _theme = theme; ConfigFileParser.ParseMenuTheme("config.json");
 
             _menuStack = new List<TextMenu>();
-            var tmView = new TextMenu(_buffer, 0, 0, TextBuffer.TextCols, TextBuffer.TextRows, "[Micro FE - Main Menu]",_theme)
+            var tmView = new TextMenu(_buffer, 0, 0, TextBuffer.TextCols, TextBuffer.TextRows, "[Micro FE - Main Menu]", _theme)
             {
                 Items = _root.Keys.ToArray(),
                 SelectedIndex = 0,
@@ -74,7 +74,35 @@ namespace MicroFE
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
+            if (!this.Focused) { return; }
 
+            if ((OpenTK.Input.GamePad.GetState(0).DPad.Up == ButtonState.Pressed))
+            {
+                _menuStack.Last().MoveCursorUp();
+                _shouldRedraw = true;
+            }
+            if ((OpenTK.Input.GamePad.GetState(0).DPad.Down == ButtonState.Pressed))
+            {
+                _menuStack.Last().MoveCursorDown();
+                _shouldRedraw = true;
+            }
+            if ((OpenTK.Input.GamePad.GetState(0).DPad.Left == ButtonState.Pressed))
+            {
+                if (_menuStack.Count > 1)
+                {
+                    _menuStack.Remove(_menuStack.Last());
+                    _nodePath.Remove(_nodePath.Last());
+                    _shouldRedraw = true;
+
+                }
+            }
+
+            if ((OpenTK.Input.GamePad.GetState(0).DPad.Right == ButtonState.Pressed))
+            {
+                HandlePropertyActivated();
+                _shouldRedraw = true;
+
+            }
             base.OnUpdateFrame(e);
         }
 
@@ -127,7 +155,7 @@ namespace MicroFE
                     0,
                     TextBuffer.TextCols - _nodePath.Count - 1,
                     TextBuffer.TextRows,
-                    currentMenu.Items[currentMenu.SelectedIndex],_theme);
+                    currentMenu.Items[currentMenu.SelectedIndex], _theme);
                 tm.Items = nextNode.Keys.ToArray();
                 _menuStack.Add(tm);
             }
