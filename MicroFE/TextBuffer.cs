@@ -17,7 +17,7 @@ namespace MicroFE
         /// <summary>
         /// 
         /// </summary>
-        public const int TextCols = 120;
+        public const int TextCols = 80;
 
         /// <summary>
         /// 

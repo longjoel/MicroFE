@@ -34,7 +34,7 @@ namespace MicroFE
             _root = ConfigFileParser.ParseConfigFile("config.json");
 
             _menuStack = new List<TextMenu>();
-            var tmView = new TextMenu(_buffer, 0, 0, TextBuffer.TextCols, TextBuffer.TextRows, "[Micro FE - Main Menu]")
+            var tmView = new TextMenu(_buffer, 0, 0, TextBuffer.TextCols, TextBuffer.TextRows, "[Micro FE - Main Menu]",null)
             {
                 Items = _root.Keys.ToArray(),
                 SelectedIndex = 0,
@@ -119,7 +119,7 @@ namespace MicroFE
                     0,
                     TextBuffer.TextCols - _nodePath.Count - 1,
                     TextBuffer.TextRows,
-                    currentMenu.Items[currentMenu.SelectedIndex]);
+                    currentMenu.Items[currentMenu.SelectedIndex],null);
                 tm.Items = nextNode.Keys.ToArray();
                 _menuStack.Add(tm);
             }

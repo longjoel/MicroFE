@@ -26,15 +26,7 @@ namespace MicroFE
         public string[] Items { get; set; }
         public int SelectedIndex { get; set; }
 
-        public Color TitleColor { get; set; }
-
-        public Color BorderColor { get; set; }
-        public Color BackgroundColor { get; set; }
-
-        public Color TextColor { get; set; }
-
-        public Color SelectedTextColor { get; set; }
-        public Color SelectedTextBackgroundColor { get; set; }
+        public MenuTheme Theme { get; set; }
 
         public TextBuffer TextBuffer { get; set; }
 
@@ -44,15 +36,20 @@ namespace MicroFE
         public int Width { get; set; }
         public int Height { get; set; }
 
-        public TextMenu(TextBuffer buffer, int x, int y, int w, int h, string title)
+        public TextMenu(TextBuffer buffer, int x, int y, int w, int h, string title, MenuTheme theme)
         {
-            BackgroundColor = Color.Black;
-            BorderColor = Color.DarkGreen;
-            SelectedTextBackgroundColor = Color.LightGreen;
-            SelectedTextColor = Color.Black;
-            TextColor = Color.LightGreen;
-            TitleColor = Color.Green;
-
+            if (theme == null)
+            {
+                Theme = new MenuTheme()
+                {
+                    BackgroundColor = Color.Black,
+                    BorderColor = Color.Green,
+                    SelectedTextBackgroundColor = Color.Green,
+                    SelectedTextColor = Color.Black,
+                    TextColor = Color.Green,
+                    TitleColor = Color.Green
+                };
+            }
             X = x;
             Y = y;
 
@@ -66,7 +63,7 @@ namespace MicroFE
 
         public void Draw()
         {
-            TextBuffer.PaintBackground(X, Y, Width, Height, BackgroundColor);
+            TextBuffer.PaintBackground(X, Y, Width, Height, Theme.BackgroundColor);
 
             for (int x = 0; x < Width; x++)
             {
@@ -77,29 +74,29 @@ namespace MicroFE
                     Color fgColor;
 
                     // 4 corners
-                    if (x == 0 && y == 0) { cx = UpperLeftCorner; fgColor = BorderColor; bgColor = BackgroundColor; }
-                    else if (x == Width - 1 && y == 0) { cx = UpperRightCorner; fgColor = BorderColor; bgColor = BackgroundColor; }
-                    else if (x == 0 && y == Height - 1) { cx = LowerLeftCorner; fgColor = BorderColor; bgColor = BackgroundColor; }
-                    else if (x == Width - 1 && y == Height - 1) { cx = LowerRightCorner; fgColor = BorderColor; bgColor = BackgroundColor; }
+                    if (x == 0 && y == 0) { cx = UpperLeftCorner; fgColor = Theme.BorderColor; bgColor = Theme.BackgroundColor; }
+                    else if (x == Width - 1 && y == 0) { cx = UpperRightCorner; fgColor = Theme.BorderColor; bgColor = Theme.BackgroundColor; }
+                    else if (x == 0 && y == Height - 1) { cx = LowerLeftCorner; fgColor = Theme.BorderColor; bgColor = Theme.BackgroundColor; }
+                    else if (x == Width - 1 && y == Height - 1) { cx = LowerRightCorner; fgColor = Theme.BorderColor; bgColor = Theme.BackgroundColor; }
 
                     // title divider
-                    else if (x == 0 && y == 2) { cx = LeftDivider; fgColor = BorderColor; bgColor = BackgroundColor; }
-                    else if (x == Width - 1 && y == 2) { cx = RighDivider; fgColor = BorderColor; bgColor = BackgroundColor; }
-                    else if (y == 2) { cx = BottomBorder; fgColor = BorderColor; bgColor = BackgroundColor; }
+                    else if (x == 0 && y == 2) { cx = LeftDivider; fgColor = Theme.BorderColor; bgColor = Theme.BackgroundColor; }
+                    else if (x == Width - 1 && y == 2) { cx = RighDivider; fgColor = Theme.BorderColor; bgColor = Theme.BackgroundColor; }
+                    else if (y == 2) { cx = BottomBorder; fgColor = Theme.BorderColor; bgColor = Theme.BackgroundColor; }
 
-                    else if (x == 0) { cx = LeftBorder; fgColor = BorderColor; bgColor = BackgroundColor; }
-                    else if (x == Width - 1) { cx = RightBorder; fgColor = BorderColor; bgColor = BackgroundColor; }
+                    else if (x == 0) { cx = LeftBorder; fgColor = Theme.BorderColor; bgColor = Theme.BackgroundColor; }
+                    else if (x == Width - 1) { cx = RightBorder; fgColor = Theme.BorderColor; bgColor = Theme.BackgroundColor; }
 
-                    else if (y == 0) { cx = TopBorder; fgColor = BorderColor; bgColor = BackgroundColor; }
-                    else if (y == Height - 1) { cx = BottomBorder; fgColor = BorderColor; bgColor = BackgroundColor; }
-                    else { cx = ' '; fgColor = BorderColor; bgColor = BackgroundColor; }
+                    else if (y == 0) { cx = TopBorder; fgColor = Theme.BorderColor; bgColor = Theme.BackgroundColor; }
+                    else if (y == Height - 1) { cx = BottomBorder; fgColor = Theme.BorderColor; bgColor = Theme.BackgroundColor; }
+                    else { cx = ' '; fgColor = Theme.BorderColor; bgColor = Theme.BackgroundColor; }
 
-                    TextBuffer.PutChar(X + x, Y + y, BorderColor, cx);
+                    TextBuffer.PutChar(X + x, Y + y, Theme.BorderColor, cx);
                 }
             }
 
             // Put the title text
-            TextBuffer.PutString(X + 1, Y + 1, TitleColor, Title);
+            TextBuffer.PutString(X + 1, Y + 1, Theme.TitleColor, Title);
 
             int availableSlots = Math.Min(Items.Count(), this.Height - 4); // top line + border line + title text + bottom line.
 
@@ -116,12 +113,12 @@ namespace MicroFE
 
                 if (mx == SelectedIndex)
                 {
-                    TextBuffer.PaintBackground(cursorX, cursorY, Width - 2, 1, SelectedTextBackgroundColor);
-                    TextBuffer.PutString(cursorX, cursorY, SelectedTextColor, Items[mx]);
+                    TextBuffer.PaintBackground(cursorX, cursorY, Width - 2, 1, Theme.SelectedTextBackgroundColor);
+                    TextBuffer.PutString(cursorX, cursorY, Theme.SelectedTextColor, Items[mx]);
                 }
                 else
                 {
-                    TextBuffer.PutString(cursorX, cursorY, TextColor, Items[mx]);
+                    TextBuffer.PutString(cursorX, cursorY, Theme.TextColor, Items[mx]);
                 }
                 mx++;
             }

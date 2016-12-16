@@ -1,12 +1,19 @@
 ﻿{
+  "Theme": {
+    "BackgroundColor": "Black",
+    "BorderColor": "Green",
+    "TextColor": "Green",
+    "TitleColor": "Green",
+    "SelectedTextColor": "Black",
+    "SelectedTextBackgroundColor": "Green"
+  },
   "Actions": [
     {
       "Name": "Launch RetroArch Gui",
-      
       "Path": "C:/Games/Emulation/Emulators/retroarch/RetroArch.exe"
-      
+
     }
-  
+
   ],
   "Emulators": [
     {
