@@ -9,3 +9,5 @@ Micro FE is an incredibly simple emulator frontend.
 * **No Artwork!** - Yup, that's right. This frontend is text only. And it's not even very good text.
 
 * **No Graphics!** - MicroFE uses straight up `System.Drawing` which means it's portable. Every OS has a monospace font.
+
+* **Simple Configuration!** - edit config.json and you are ready to go!

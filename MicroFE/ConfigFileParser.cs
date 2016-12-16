@@ -8,17 +8,32 @@ using System.IO;
 using System.Diagnostics;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
+using System.Drawing;
 
 namespace MicroFE
 {
     public class ConfigFileParser
     {
+        public static MenuTheme ParseMenuTheme(string configPath)
+        {
+            dynamic jsonRoot = JObject.Parse(File.ReadAllText(configPath));
+
+            var theme = new MenuTheme()
+            {
+                BackgroundColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.BackgroundColor) ?? "Black"),
+                SelectedTextBackgroundColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.SelectedTextBackgroundColor) ?? "Green"),
+                BorderColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.BorderColor) ?? "Green"),
+                SelectedTextColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.SelectedTextColor) ?? "Black"),
+                TextColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.TextColor) ?? "Green"),
+                TitleColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.TitleColor) ?? "Green"),
+            };
+
+            return theme;
+        }
+
         public static TreeNode ParseConfigFile(string configPath)
         {
             var root = new TreeNode() { };
-
-
-
             dynamic jsonRoot = JObject.Parse(File.ReadAllText(configPath));
 
             ParseEmulators(root, jsonRoot);

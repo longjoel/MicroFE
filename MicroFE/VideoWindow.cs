@@ -23,18 +23,22 @@ namespace MicroFE
         List<TreeNode> _nodePath;
         TreeNode _root;
 
+        MenuTheme _theme = null;
+
 
         TextBuffer _textBuffer;
 
-        public VideoWindow() : base()
+        public VideoWindow(TreeNode root, MenuTheme theme) : base()
         {
             _buffer = new TextBuffer();
             _nodePath = new List<TreeNode>();
 
-            _root = ConfigFileParser.ParseConfigFile("config.json");
+            _root = root; ConfigFileParser.ParseConfigFile("config.json");
+
+            _theme = theme;  ConfigFileParser.ParseMenuTheme("config.json");
 
             _menuStack = new List<TextMenu>();
-            var tmView = new TextMenu(_buffer, 0, 0, TextBuffer.TextCols, TextBuffer.TextRows, "[Micro FE - Main Menu]")
+            var tmView = new TextMenu(_buffer, 0, 0, TextBuffer.TextCols, TextBuffer.TextRows, "[Micro FE - Main Menu]",_theme)
             {
                 Items = _root.Keys.ToArray(),
                 SelectedIndex = 0,
@@ -68,7 +72,11 @@ namespace MicroFE
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
         }
 
+        protected override void OnUpdateFrame(FrameEventArgs e)
+        {
 
+            base.OnUpdateFrame(e);
+        }
 
 
         protected override void OnKeyDown(KeyboardKeyEventArgs e)
@@ -119,7 +127,7 @@ namespace MicroFE
                     0,
                     TextBuffer.TextCols - _nodePath.Count - 1,
                     TextBuffer.TextRows,
-                    currentMenu.Items[currentMenu.SelectedIndex]);
+                    currentMenu.Items[currentMenu.SelectedIndex],_theme);
                 tm.Items = nextNode.Keys.ToArray();
                 _menuStack.Add(tm);
             }
