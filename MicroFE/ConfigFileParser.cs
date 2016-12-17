@@ -12,38 +12,56 @@ using System.Drawing;
 
 namespace MicroFE
 {
+    /// <summary>
+    /// A simple config file parser.
+    /// </summary>
     public class ConfigFileParser
     {
+        /// <summary>
+        /// Extract the theme overrides from a given config file.
+        /// </summary>
+        /// <param name="configPath"></param>
+        /// <returns></returns>
         public static MenuTheme ParseMenuTheme(string configPath)
         {
-            dynamic jsonRoot = JObject.Parse(File.ReadAllText(configPath));
-
-            var theme = new MenuTheme()
+            if(File.Exists(configPath))
             {
-                BackgroundColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.BackgroundColor) ?? "Black"),
-                SelectedTextBackgroundColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.SelectedTextBackgroundColor) ?? "Green"),
-                BorderColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.BorderColor) ?? "Green"),
-                SelectedTextColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.SelectedTextColor) ?? "Black"),
-                TextColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.TextColor) ?? "Green"),
-                TitleColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.TitleColor) ?? "Green"),
-            };
+                dynamic jsonRoot = JObject.Parse(File.ReadAllText(configPath));
 
-            return theme;
+                var theme = new MenuTheme()
+                {
+                    BackgroundColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.BackgroundColor) ?? "Black") ,
+                    SelectedTextBackgroundColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.SelectedTextBackgroundColor) ?? "Green"),
+                    BorderColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.BorderColor) ?? "Green"),
+                    SelectedTextColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.SelectedTextColor) ?? "Black"),
+                    TextColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.TextColor) ?? "Green"),
+                    TitleColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.TitleColor) ?? "Green"),
+                };
+
+                return theme;
+            }
+
+            return null;
         }
 
+        // Parse a given config file. Parse the emulators first, then the actions.
         public static TreeNode ParseConfigFile(string configPath)
         {
-            var root = new TreeNode() { };
-            dynamic jsonRoot = JObject.Parse(File.ReadAllText(configPath));
+            if (File.Exists(configPath))
+            {
 
-            ParseEmulators(root, jsonRoot);
+                var root = new TreeNode();
+                dynamic jsonRoot = JObject.Parse(File.ReadAllText(configPath));
 
-            ParseActions(root, jsonRoot);
+                ParseEmulators(root, jsonRoot);
+                ParseActions(root, jsonRoot);
 
-            root["Quit"] = new TreeNode() { OnSelect = new Action(() => { Environment.Exit(0); }) };
+                //Quit should always be the last option.
+                root["Quit"] = new TreeNode() { OnSelect = new Action(() => { Environment.Exit(0); }) };
 
-            return root;
-
+                return root;
+            }
+            return null;
         }
 
         private static void ParseActions(TreeNode root, dynamic jsonRoot)

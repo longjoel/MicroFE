@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace MicroFE
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class MenuTheme
     {
         public Color TitleColor { get; set; }
@@ -18,5 +21,15 @@ namespace MicroFE
 
         public Color SelectedTextColor { get; set; }
         public Color SelectedTextBackgroundColor { get; set; }
+
+        public MenuTheme()
+        {
+            TitleColor = Color.Green;
+            BorderColor = Color.Green;
+            BackgroundColor = Color.Black;
+            TextColor = Color.Green;
+            SelectedTextColor = Color.Black;
+            SelectedTextBackgroundColor = Color.Green;
+        }
     }
 }

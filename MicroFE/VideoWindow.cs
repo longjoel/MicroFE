@@ -11,6 +11,11 @@ using System.Drawing.Imaging;
 
 namespace MicroFE
 {
+    /// <summary>
+    /// Video Window Class
+    /// 
+    /// Primary experience for MicroFE
+    /// </summary>
     public class VideoWindow : OpenTK.GameWindow
     {
 
@@ -48,13 +53,6 @@ namespace MicroFE
             _menuStack.Add(tmView);
         }
 
-        void CreateTexture()
-        {
-
-            GL.GenTextures(1, out _textureHandle);
-            GL.BindTexture(TextureTarget.Texture2D, _textureHandle);
-
-        }
 
         void UpdateTexture()
         {
@@ -72,21 +70,25 @@ namespace MicroFE
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
         }
 
+        /// <summary>
+        /// Use this method to handle gamepad input.
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             if (!this.Focused) { return; }
 
-            if ((OpenTK.Input.GamePad.GetState(0).DPad.Up == ButtonState.Pressed))
+            if ((GamePad.GetState(0).DPad.Up == ButtonState.Pressed))
             {
                 _menuStack.Last().MoveCursorUp();
                 _shouldRedraw = true;
             }
-            if ((OpenTK.Input.GamePad.GetState(0).DPad.Down == ButtonState.Pressed))
+            if ((GamePad.GetState(0).DPad.Down == ButtonState.Pressed))
             {
                 _menuStack.Last().MoveCursorDown();
                 _shouldRedraw = true;
             }
-            if ((OpenTK.Input.GamePad.GetState(0).DPad.Left == ButtonState.Pressed))
+            if ((GamePad.GetState(0).DPad.Left == ButtonState.Pressed))
             {
                 if (_menuStack.Count > 1)
                 {
@@ -97,7 +99,7 @@ namespace MicroFE
                 }
             }
 
-            if ((OpenTK.Input.GamePad.GetState(0).DPad.Right == ButtonState.Pressed))
+            if ((GamePad.GetState(0).DPad.Right == ButtonState.Pressed))
             {
                 HandlePropertyActivated();
                 _shouldRedraw = true;
@@ -164,12 +166,17 @@ namespace MicroFE
 
 
 
-
+        /// <summary>
+        /// Setup the graphics.
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnLoad(EventArgs e)
         {
             _backBuffer = new Bitmap(this.Width, this.Height);
             _textBuffer = new TextBuffer();
-            CreateTexture();
+
+            GL.GenTextures(1, out _textureHandle);
+            GL.BindTexture(TextureTarget.Texture2D, _textureHandle);
 
             GL.Disable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Texture2D);
@@ -177,6 +184,10 @@ namespace MicroFE
             base.OnLoad(e);
         }
 
+        /// <summary>
+        /// Handle a window resize event.
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnResize(EventArgs e)
         {
             _backBuffer = new Bitmap(Width, Height);
@@ -184,6 +195,11 @@ namespace MicroFE
             GL.Viewport(0, 0, Width, Height);
         }
 
+        /// <summary>
+        /// Draw the menu stack every frame.
+        /// If should redraw has been flagged, the texture will be regenerated.
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             if (_shouldRedraw)
