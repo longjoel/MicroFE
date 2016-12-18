@@ -141,6 +141,7 @@ namespace MicroFE
                        
                     }
 
+                    // scale the character to fit the full width and height.
                     using(var context = Graphics.FromImage(b))
                     {
                         context.DrawImage(bx,  
