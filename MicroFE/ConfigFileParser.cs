@@ -14,6 +14,18 @@ namespace MicroFE
 {
     public class ConfigFileParser
     {
+        public static Settings ParseSettings(string configPath)
+        {
+            var settings = new Settings();
+
+            dynamic jsonRoot = JObject.Parse(File.ReadAllText(configPath));
+
+            settings.QuitCombo = Convert.ToString(jsonRoot?.Settings?.QuitCombo) ?? "L3+R3";
+
+
+            return settings;
+        }
+
         public static MenuTheme ParseMenuTheme(string configPath)
         {
             dynamic jsonRoot = JObject.Parse(File.ReadAllText(configPath));
@@ -34,13 +46,18 @@ namespace MicroFE
         public static TreeNode ParseConfigFile(string configPath)
         {
             var root = new TreeNode() { };
-            dynamic jsonRoot = JObject.Parse(File.ReadAllText(configPath));
 
-            ParseEmulators(root, jsonRoot);
+            try
+            {
+                dynamic jsonRoot = JObject.Parse(File.ReadAllText(configPath));
 
-            ParseActions(root, jsonRoot);
+                ParseEmulators(root, jsonRoot);
 
-            root["Quit"] = new TreeNode() { OnSelect = new Action(() => { Environment.Exit(0); }) };
+                ParseActions(root, jsonRoot);
+
+                root["Quit"] = new TreeNode() { OnSelect = new Action(() => { Environment.Exit(0); }) };
+            }
+            catch { }
 
             return root;
 
@@ -107,7 +124,7 @@ namespace MicroFE
 
                                 startInfo.Arguments = startInfo.Arguments.Replace("%ROM%", "\"" + r + "\"");
 
-                                Process.Start(startInfo);
+                                Program.RunningEmulator = Process.Start(startInfo);
                             });
 
 

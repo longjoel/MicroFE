@@ -8,6 +8,7 @@ using OpenTK.Input;
 using System.Drawing;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing.Imaging;
+using System.Diagnostics;
 
 namespace MicroFE
 {
@@ -28,8 +29,11 @@ namespace MicroFE
 
         TextBuffer _textBuffer;
 
+
         public VideoWindow(TreeNode root, MenuTheme theme) : base()
         {
+
+
             _buffer = new TextBuffer();
             _nodePath = new List<TreeNode>();
 
@@ -74,34 +78,68 @@ namespace MicroFE
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            if (!this.Focused) { return; }
+            
+            if (!this.Focused)
+            {
 
-            if ((OpenTK.Input.GamePad.GetState(0).DPad.Up == ButtonState.Pressed))
-            {
-                _menuStack.Last().MoveCursorUp();
-                _shouldRedraw = true;
-            }
-            if ((OpenTK.Input.GamePad.GetState(0).DPad.Down == ButtonState.Pressed))
-            {
-                _menuStack.Last().MoveCursorDown();
-                _shouldRedraw = true;
-            }
-            if ((OpenTK.Input.GamePad.GetState(0).DPad.Left == ButtonState.Pressed))
-            {
-                if (_menuStack.Count > 1)
+                if (Program.RunningEmulator != null)
                 {
-                    _menuStack.Remove(_menuStack.Last());
-                    _nodePath.Remove(_nodePath.Last());
+                    var state = GamePad.GetState(0);
+                    bool shouldKill = false;
+                    switch (Program.Settings.QuitCombo)
+                    {
+                        case ("L3+R3"):
+                            shouldKill = (state.Buttons.LeftStick == ButtonState.Pressed && state.Buttons.RightStick == ButtonState.Pressed);
+
+                            break;
+                    }
+
+                    if (shouldKill)
+                    {
+                        try
+                        {
+                            Program.RunningEmulator.Kill();
+                        }
+                        catch { }
+
+                        finally
+                        {
+                            Program.RunningEmulator = null;
+                        }
+                    }
+                }
+
+            }
+            else
+            {
+
+                if ((OpenTK.Input.GamePad.GetState(0).DPad.Up == ButtonState.Pressed))
+                {
+                    _menuStack.Last().MoveCursorUp();
+                    _shouldRedraw = true;
+                }
+                if ((OpenTK.Input.GamePad.GetState(0).DPad.Down == ButtonState.Pressed))
+                {
+                    _menuStack.Last().MoveCursorDown();
+                    _shouldRedraw = true;
+                }
+                if ((OpenTK.Input.GamePad.GetState(0).DPad.Left == ButtonState.Pressed))
+                {
+                    if (_menuStack.Count > 1)
+                    {
+                        _menuStack.Remove(_menuStack.Last());
+                        _nodePath.Remove(_nodePath.Last());
+                        _shouldRedraw = true;
+
+                    }
+                }
+
+                if ((OpenTK.Input.GamePad.GetState(0).DPad.Right == ButtonState.Pressed))
+                {
+                    HandlePropertyActivated();
                     _shouldRedraw = true;
 
                 }
-            }
-
-            if ((OpenTK.Input.GamePad.GetState(0).DPad.Right == ButtonState.Pressed))
-            {
-                HandlePropertyActivated();
-                _shouldRedraw = true;
-
             }
             base.OnUpdateFrame(e);
         }
