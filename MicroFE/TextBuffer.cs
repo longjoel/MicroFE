@@ -17,12 +17,12 @@ namespace MicroFE
         /// <summary>
         /// 
         /// </summary>
-        public const int TextCols = 80;
+        public const int TextCols = 100;
 
         /// <summary>
         /// 
         /// </summary>
-        public const int TextRows = 43;
+        public const int TextRows = 50;
 
         /// <summary>
         /// 
@@ -34,34 +34,61 @@ namespace MicroFE
         /// </summary>
         public int CharHeight { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         bool _disposed = false;
 
-        Font _titleFont;
-        Brush _titleFontBrush;
+        /// <summary>
+        /// 
+        /// </summary>
+        Font _textFont;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        Brush _textBrish;
 
         char[] _buffer = new char[TextRows * TextCols];
         Color[] _bufferColors = new Color[TextRows * TextCols];
         Color[] _backColors = new Color[TextRows * TextCols];
 
+        /// <summary>
+        /// Context Independent back buffer.
+        /// </summary>
         Bitmap _backBuffer;
+
+        /// <summary>
+        /// Graphics context for back buffer.
+        /// </summary>
         Graphics _backBufferContext;
 
+        /// <summary>
+        /// Also, creating and destroying bitmaps over and over again is also bad. GDI+ can blow up on this.
+        /// To speed things up, since drawing text is slow, cache the text drawn to screen as bitmaps.
+        /// </summary>
         Dictionary<int, Bitmap> _fontCache;
+
+        /// <summary>
+        /// Creating and destroying brushes over and over is bad. Cache the ones used instead.
+        /// </summary>
         Dictionary<int, Brush> _brushCache;
 
+        /// <summary>
+        /// Figure out the width and height of the text. 
+        /// </summary>
         public TextBuffer()
         {
-            _titleFont = new Font(FontFamily.GenericMonospace, 48, FontStyle.Bold, GraphicsUnit.Pixel);
-            _titleFontBrush = new SolidBrush(Color.DarkGreen);
+            _textFont = new Font(FontFamily.GenericMonospace, 48, FontStyle.Bold, GraphicsUnit.Pixel);
             _brushCache = new Dictionary<int, Brush>();
 
-            CharHeight = (int)_titleFont.GetHeight();
+            CharHeight = (int)_textFont.GetHeight();
 
             using (var tmpBitmap = new Bitmap(1, 1))
             {
                 using (var tmpGfx = Graphics.FromImage(tmpBitmap))
                 {
-                    var stringSize = tmpGfx.MeasureString("─", _titleFont);
+                    var stringSize = tmpGfx.MeasureString("─", _textFont);
                     CharWidth = (int)stringSize.Width;
                 }
             }
@@ -70,6 +97,11 @@ namespace MicroFE
 
         }
 
+        /// <summary>
+        /// Get a brush for a given color then fetch it from the cache. If it's not there, add it.
+        /// </summary>
+        /// <param name="c"></param>
+        /// <returns></returns>
         Brush GetBrush(Color c)
         {
             Brush b = null;
@@ -81,9 +113,16 @@ namespace MicroFE
             return b;
         }
 
-        Bitmap GetBitmap(Color color, char c)
+        /// <summary>
+        /// Fetch a bitmap for a given color and character. If it doesn't exist, create it.
+        /// </summary>
+        /// <param name="color"></param>
+        /// <param name="c"></param>
+        /// <returns></returns>
+        Bitmap GetCharBitmap(Color color, char c)
         {
             Bitmap b = null;
+
             if (!_fontCache.TryGetValue(new Tuple<Color, char>(color, c).GetHashCode(), out b))
             {
                 b = new Bitmap(CharWidth, CharHeight);
@@ -93,7 +132,7 @@ namespace MicroFE
                     {
                         context.TextRenderingHint = TextRenderingHint.SingleBitPerPixelGridFit;
                       
-                        context.DrawString(c.ToString(), _titleFont, GetBrush(color), 0, 0, new StringFormat() {
+                        context.DrawString(c.ToString(), _textFont, GetBrush(color), 0, 0, new StringFormat() {
                             Alignment = StringAlignment.Near,
                             FormatFlags = StringFormatFlags.NoClip|StringFormatFlags.NoWrap,
                             LineAlignment = StringAlignment.Near,
@@ -102,6 +141,7 @@ namespace MicroFE
                        
                     }
 
+                    // scale the character to fit the full width and height.
                     using(var context = Graphics.FromImage(b))
                     {
                         context.DrawImage(bx,  
@@ -117,6 +157,13 @@ namespace MicroFE
             return b;
         }
 
+        /// <summary>
+        /// Put a character into the buffer at a given point with a given color.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="color"></param>
+        /// <param name="c"></param>
         public void PutChar(int x, int y, Color color, char c)
         {
             if (x >= 0 && y >= 0 && x < TextCols && y < TextRows)
@@ -174,9 +221,7 @@ namespace MicroFE
 
                         if (_bufferColors[i] != default(Color) && _buffer[i] != default(char))
                         {
-                            //_backBufferContext.DrawRectangle(Pens.White,
-                            // new Rectangle((int)(i % TextCols) * CharWidth, (int)(i / TextCols) * CharHeight, CharWidth, CharHeight));
-                            var bmp = GetBitmap(_bufferColors[i], _buffer[i]);
+                            var bmp = GetCharBitmap(_bufferColors[i], _buffer[i]);
                             _backBufferContext.DrawImage(bmp, (i % TextCols) * CharWidth, (i / TextCols) * CharHeight);
                         }
                     }
