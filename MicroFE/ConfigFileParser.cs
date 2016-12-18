@@ -17,6 +17,18 @@ namespace MicroFE
     /// </summary>
     public class ConfigFileParser
     {
+        public static Settings ParseSettings(string configPath)
+        {
+            var settings = new Settings();
+
+            dynamic jsonRoot = JObject.Parse(File.ReadAllText(configPath));
+
+            settings.QuitCombo = Convert.ToString(jsonRoot?.Settings?.QuitCombo) ?? "L3+R3";
+
+
+            return settings;
+        }
+
         /// <summary>
         /// Extract the theme overrides from a given config file.
         /// </summary>
@@ -125,7 +137,7 @@ namespace MicroFE
 
                                 startInfo.Arguments = startInfo.Arguments.Replace("%ROM%", "\"" + r + "\"");
 
-                                Process.Start(startInfo);
+                                Program.RunningEmulator = Process.Start(startInfo);
                             });
 
 

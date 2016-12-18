@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -8,20 +9,20 @@ namespace MicroFE
 {
     static class Program
     {
+        public static Process RunningEmulator { get; set; }
+
+        public static Settings Settings { get; set; }
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main()
         {
-            TreeNode root = null;
-            try
-            {
-                root = ConfigFileParser.ParseConfigFile("config.json");
+            Settings = ConfigFileParser.ParseSettings("config.json");
 
-            }
-            catch { }
-
+            TreeNode root  = ConfigFileParser.ParseConfigFile("config.json");
+            
 
             if (root == null)
             {

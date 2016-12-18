@@ -43,12 +43,7 @@ namespace MicroFE
         /// 
         /// </summary>
         Font _textFont;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        Brush _textBrish;
-
+        
         char[] _buffer = new char[TextRows * TextCols];
         Color[] _bufferColors = new Color[TextRows * TextCols];
         Color[] _backColors = new Color[TextRows * TextCols];

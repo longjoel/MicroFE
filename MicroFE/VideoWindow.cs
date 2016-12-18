@@ -8,6 +8,7 @@ using OpenTK.Input;
 using System.Drawing;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing.Imaging;
+using System.Diagnostics;
 
 namespace MicroFE
 {
@@ -33,8 +34,11 @@ namespace MicroFE
 
         TextBuffer _textBuffer;
 
+
         public VideoWindow(TreeNode root, MenuTheme theme) : base()
         {
+
+
             _buffer = new TextBuffer();
             _nodePath = new List<TreeNode>();
 
@@ -76,7 +80,40 @@ namespace MicroFE
         /// <param name="e"></param>
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            if (!this.Focused) { return; }
+            
+            if (!this.Focused)
+            {
+
+                if (Program.RunningEmulator != null)
+                {
+                    var state = GamePad.GetState(0);
+                    bool shouldKill = false;
+                    switch (Program.Settings.QuitCombo)
+                    {
+                        case ("L3+R3"):
+                            shouldKill = (state.Buttons.LeftStick == ButtonState.Pressed && state.Buttons.RightStick == ButtonState.Pressed);
+
+                            break;
+                    }
+
+                    if (shouldKill)
+                    {
+                        try
+                        {
+                            Program.RunningEmulator.Kill();
+                        }
+                        catch { }
+
+                        finally
+                        {
+                            Program.RunningEmulator = null;
+                        }
+                    }
+                }
+
+            }
+            else
+            {
 
             if ((GamePad.GetState(0).DPad.Up == ButtonState.Pressed))
             {
@@ -96,14 +133,15 @@ namespace MicroFE
                     _nodePath.Remove(_nodePath.Last());
                     _shouldRedraw = true;
 
+                    }
                 }
-            }
 
-            if ((GamePad.GetState(0).DPad.Right == ButtonState.Pressed))
-            {
-                HandlePropertyActivated();
-                _shouldRedraw = true;
+                if ((OpenTK.Input.GamePad.GetState(0).DPad.Right == ButtonState.Pressed))
+                {
+                    HandlePropertyActivated();
+                    _shouldRedraw = true;
 
+                }
             }
             base.OnUpdateFrame(e);
         }
