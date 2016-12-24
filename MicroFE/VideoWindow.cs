@@ -183,6 +183,8 @@ namespace MicroFE
             var currentMenu = _menuStack.Last();
             var nextNode = _nodePath.Last()[currentMenu.Items[currentMenu.SelectedIndex]];
 
+            if (nextNode == null) return;
+
             if (nextNode.OnSelect != null)
             {
                 nextNode.OnSelect();
