@@ -66,7 +66,7 @@ This section is for launching one off programs. Perhaps you need to run your emu
 Each action will have at minimum a `Name` and a `Path`. The `Name` is what will appear inside MicroFE. The `Path` is the location
 of the action to be run. This can be a batch file, an exe file, a python script, etc.
 
-### emulators
+### Emulators
 
 The emulator section contains a list of emulators and the things that MicroFE needs to launch it and find the games.
 
