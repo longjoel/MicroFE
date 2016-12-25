@@ -14,11 +14,12 @@ name of the text file is what will be displayed as the file name.
 
 ## Getting the latest version of MicroFE
 
-* *Download Link Goes Here*
+* https://github.com/longjoel/MicroFE/releases/
 
-## Settings Up MicroFE - Windows
+## Settings Up MicroFE - Config.json
 
-Here is a template you can use for the config.json file.
+Here is a template you can use for the config.json file. `config.json` must live in the same folder as MicroFE.exe
+
 ```json
 {
   "Theme": {
@@ -62,6 +63,9 @@ The theme is composed of 6 different elements. If no theme is provided, the defa
 
 This section is for launching one off programs. Perhaps you need to run your emulators to set them up. This is optional as well.
 
+Each action will have at minimum a `Name` and a `Path`. The `Name` is what will appear inside MicroFE. The `Path` is the location
+of the action to be run. This can be a batch file, an exe file, a python script, etc.
+
 ### emulators
 
 The emulator section contains a list of emulators and the things that MicroFE needs to launch it and find the games.
@@ -84,13 +88,4 @@ syntax for passing in the name of the game to play. This is the only required em
 
 * `RomFilter` is a filter for making sure that only games get displayed, and not extra files like playlists or save states. Most emulators will
 handle `.zip` files just fine.
-
-
-## Running MicroFE - Windows
-
-## Setting Up MicroFE - Linux
-
-## Running MicroFE - Linux
-
-## Building MicroFE
 
