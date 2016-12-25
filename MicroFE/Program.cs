@@ -34,14 +34,11 @@ namespace MicroFE
             {
                 root = new TreeNode()
                 {
-                    ["config.json not found. See setup.html for help."] = new TreeNode()
-                    {
-                        OnSelect = new Action(() => { System.Diagnostics.Process.Start("Setup.html"); })
-                    },
+                   
 
-                    ["or go to https://github.com/longjoel/MicroFE"] = new TreeNode()
+                    ["config.json not found. github.com/longjoel/MicroFE"] = new TreeNode()
                     {
-                        OnSelect = new Action(() => { System.Diagnostics.Process.Start("https://github.com/longjoel/MicroFE"); })
+                        OnSelect = new Action(() => { Process.Start("https://github.com/longjoel/MicroFE"); })
                     },
 
                     ["(Quit)"] = new TreeNode()
