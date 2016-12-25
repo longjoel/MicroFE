@@ -31,10 +31,10 @@ namespace MicroFE
             root[" "] = null;
 
             // Make the documentation available from inside the program
-            root[" Setup Guide"] = new TreeNode() { OnSelect = new Action(() => { System.Diagnostics.Process.Start("Setup.html"); }) };
+            root[" Setup Guide"] = new TreeNode() { OnSelect = new Action(() => { Process.Start(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"Docs/Setup.html")); }) };
             root[" Project Page"] = new TreeNode()
             {
-                OnSelect = new Action(() => { System.Diagnostics.Process.Start("https://github.com/longjoel/MicroFE"); })
+                OnSelect = new Action(() => { Process.Start("https://github.com/longjoel/MicroFE"); })
             };
             return root;
         }
