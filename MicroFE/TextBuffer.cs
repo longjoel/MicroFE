@@ -17,12 +17,17 @@ namespace MicroFE
         /// <summary>
         /// 
         /// </summary>
-        public const int TextCols = 100;
+        public const int TextCols = 60;
 
         /// <summary>
         /// 
         /// </summary>
-        public const int TextRows = 50;
+        public const int TextRows = 20;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public char[] WindowCharacters { get; set; }
 
         /// <summary>
         /// 
@@ -43,7 +48,14 @@ namespace MicroFE
         /// 
         /// </summary>
         Font _textFont;
-        
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        Font _windowFont;
+
+
         char[] _buffer = new char[TextRows * TextCols];
         Color[] _bufferColors = new Color[TextRows * TextCols];
         Color[] _backColors = new Color[TextRows * TextCols];
@@ -74,7 +86,9 @@ namespace MicroFE
         /// </summary>
         public TextBuffer()
         {
-            _textFont = new Font(FontFamily.GenericMonospace, 48, FontStyle.Bold, GraphicsUnit.Pixel);
+            _textFont = new Font(FontFamily.GenericMonospace, 16, FontStyle.Bold, GraphicsUnit.Pixel);
+            _windowFont = new Font(FontFamily.GenericMonospace, 32, FontStyle.Bold, GraphicsUnit.Pixel);
+
             _brushCache = new Dictionary<int, Brush>();
 
             CharHeight = (int)_textFont.GetHeight();
@@ -117,40 +131,95 @@ namespace MicroFE
         Bitmap GetCharBitmap(Color color, char c)
         {
             Bitmap b = null;
+            var sf = new StringFormat()
+            {
+                FormatFlags = StringFormatFlags.NoClip | StringFormatFlags.NoFontFallback | StringFormatFlags.NoWrap,
+                Trimming = StringTrimming.Character,
+                Alignment = StringAlignment.Near,
+                LineAlignment = StringAlignment.Near
+            };
 
+            // if it's not a control character, don't resize the text.
             if (!_fontCache.TryGetValue(new Tuple<Color, char>(color, c).GetHashCode(), out b))
             {
                 b = new Bitmap(CharWidth, CharHeight);
-                using (var bx = new Bitmap(CharWidth, CharHeight))
+
+                if (WindowCharacters == null || !WindowCharacters.Contains(c))
                 {
-                    using (var context = Graphics.FromImage(bx))
+                    using (var ctx = Graphics.FromImage(b))
                     {
-                        context.TextRenderingHint = TextRenderingHint.SingleBitPerPixelGridFit;
-                      
-                        context.DrawString(c.ToString(), _textFont, GetBrush(color), 0, 0, new StringFormat() {
-                            Alignment = StringAlignment.Near,
-                            FormatFlags = StringFormatFlags.NoClip|StringFormatFlags.NoWrap,
-                            LineAlignment = StringAlignment.Near,
-                            Trimming = StringTrimming.Character
-                        });
-                       
+                        ctx.TextRenderingHint = TextRenderingHint.SingleBitPerPixelGridFit;
+                        ctx.DrawString(c.ToString(), _textFont, GetBrush(color), 0, 0, sf);
                     }
 
-                    // scale the character to fit the full width and height.
-                    using(var context = Graphics.FromImage(b))
+
+                }
+                else
+                {
+                    using (var ctx = Graphics.FromImage(b))
                     {
-                        context.DrawImage(bx,  
-                            new Rectangle(0,0,CharWidth, CharHeight), 
-                            new Rectangle(8, 3, CharWidth-16 , CharHeight-6 ), 
-                            GraphicsUnit.Pixel);
+                        ctx.TextRenderingHint = TextRenderingHint.SingleBitPerPixelGridFit;
+                        ctx.DrawString(c.ToString(), _windowFont, GetBrush(color), -8,-10, sf);
                     }
                 }
 
-
                 _fontCache[new Tuple<Color, char>(color, c).GetHashCode()] = b;
+
             }
             return b;
         }
+        //    using (var bx = new Bitmap(CharWidth, CharHeight))
+        //    {
+        //        using (var context = Graphics.FromImage(bx))
+        //        {
+        //            if (!(WindowCharacters != null && WindowCharacters.Contains(c)))
+        //            {
+
+
+        //            }
+        //        }
+        //    }
+        //}
+        //    using (var context = Graphics.FromImage(bx))
+        //{
+        //    context.TextRenderingHint = TextRenderingHint.SingleBitPerPixelGridFit;
+
+        //    context.DrawString(c.ToString(), _textFont, GetBrush(color), 0, 0, new StringFormat()
+        //    {
+        //        Alignment = StringAlignment.Near,
+        //        FormatFlags = StringFormatFlags.NoClip | StringFormatFlags.NoWrap,
+        //        LineAlignment = StringAlignment.Near,
+        //        Trimming = StringTrimming.Character
+        //    });
+
+        //}
+
+        //if (WindowCharacters != null && WindowCharacters.Contains(c))
+        //{
+        //    // scale the character to fit the full width and height.
+        //    using (var context = Graphics.FromImage(b))
+        //    {
+        //        context.DrawImage(bx,
+        //            new Rectangle(0, 0, CharWidth, CharHeight),
+        //            new Rectangle(8, 3, CharWidth - 16, CharHeight - 6),
+        //            GraphicsUnit.Pixel);
+        //    }
+        //}
+
+        //else
+        //{
+        //    using (var context = Graphics.FromImage(b))
+        //    {
+        //        context.DrawImage(bx, new PointF(0, 0));
+        //    }
+        //}
+        //    }
+
+
+        //    _fontCache[new Tuple<Color, char>(color, c).GetHashCode()] = b;
+        //}
+        //    return b;
+        //}
 
         /// <summary>
         /// Put a character into the buffer at a given point with a given color.

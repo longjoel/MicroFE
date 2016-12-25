@@ -43,6 +43,7 @@ namespace MicroFE
                 WindowBorder = OpenTK.WindowBorder.Hidden,
                 Bounds = Screen.PrimaryScreen.Bounds
 
+             
             })
             {
                 viewWindow.Run();

@@ -38,6 +38,19 @@ namespace MicroFE
 
         public TextMenu(TextBuffer buffer, int x, int y, int w, int h, string title, MenuTheme theme)
         {
+            buffer.WindowCharacters = new char[] {
+                UpperLeftCorner,
+                UpperRightCorner,
+                LowerLeftCorner,
+                LowerRightCorner,
+                LeftBorder,
+                RightBorder,
+                TopBorder,
+                BottomBorder,
+                LeftDivider,
+                RighDivider,
+            };
+
             if (theme == null)
             {
                 Theme = new MenuTheme()
@@ -116,11 +129,15 @@ namespace MicroFE
                 if (mx == SelectedIndex)
                 {
                     TextBuffer.PaintBackground(cursorX, cursorY, Width - 2, 1, Theme.SelectedTextBackgroundColor);
-                    TextBuffer.PutString(cursorX, cursorY, Theme.SelectedTextColor, Items[mx]);
+                    var itemText = Items[mx];
+                    if (itemText.Length >= Width - 2) itemText = itemText.Substring(0,Width-2);
+                    TextBuffer.PutString(cursorX, cursorY, Theme.SelectedTextColor, itemText);
                 }
                 else
                 {
-                    TextBuffer.PutString(cursorX, cursorY, Theme.TextColor, Items[mx]);
+                    var itemText = Items[mx];
+                    if (itemText.Length >= Width - 2) itemText = itemText.Substring(0, Width - 2);
+                    TextBuffer.PutString(cursorX, cursorY, Theme.TextColor, itemText);
                 }
                 mx++;
             }
