@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft;
 using System.IO;
 using System.Diagnostics;
-using System.Windows.Forms;
-using Newtonsoft.Json.Linq;
-using System.Drawing;
 namespace MicroFE
 {
     /// <summary>
@@ -16,142 +10,102 @@ namespace MicroFE
     /// </summary>
     public class ConfigFileParser
     {
-        public static Settings ParseSettings(string configPath)
+        /// Parse a given config file. Parse the emulators first, then the actions.
+        public static TreeNode ParseConfigFile(MicroFEConfig config)
         {
-            var settings = new Settings();
-
-            dynamic jsonRoot = JObject.Parse(File.ReadAllText(configPath));
-
-            settings.QuitCombo = Convert.ToString(jsonRoot?.Settings?.QuitCombo) ?? "L3+R3";
-
-
-            return settings;
-        }
-
-        /// <summary>
-        /// Extract the theme overrides from a given config file.
-        /// </summary>
-        /// <param name="configPath"></param>
-        /// <returns></returns>
-        public static MenuTheme ParseMenuTheme(string configPath)
-        {
-            if (File.Exists(configPath))
-            {
-                dynamic jsonRoot = JObject.Parse(File.ReadAllText(configPath));
-
-                var theme = new MenuTheme()
-                {
-                    BackgroundColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.BackgroundColor) ?? "Black"),
-                    SelectedTextBackgroundColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.SelectedTextBackgroundColor) ?? "Green"),
-                    BorderColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.BorderColor) ?? "Green"),
-                    SelectedTextColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.SelectedTextColor) ?? "Black"),
-                    TextColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.TextColor) ?? "Green"),
-                    TitleColor = Color.FromName(Convert.ToString(jsonRoot?.Theme?.TitleColor) ?? "Green"),
-                };
-
-                return theme;
-            }
-
-            return null;
-        }
-
-        // Parse a given config file. Parse the emulators first, then the actions.
-        public static TreeNode ParseConfigFile(string configPath)
-        {
-            if (File.Exists(configPath))
-            {
-
-                var root = new TreeNode();
-                dynamic jsonRoot = JObject.Parse(File.ReadAllText(configPath));
-
-                root["--Playlists--"] = null;
-                ParsePlaylists(root, jsonRoot);
-
-                root["--Emulators--"] = null;
-                ParseEmulators(root, jsonRoot);
-
-                root["--Actions--"] = null;
-                ParseActions(root, jsonRoot);
-
-                //Quit should always be the last option.
-                root["Quit"] = new TreeNode() { OnSelect = new Action(() => { Environment.Exit(0); }) };
-
-                return root;
-            }
-            return null;
-        }
-
-        private static void ParseActions(TreeNode root, dynamic jsonRoot)
-        {
+            var root = new TreeNode();
             
-            // parse out Actions
-            if (jsonRoot.Actions != null)
+            if (config?.Emulators?.Any() ?? false)
             {
-                foreach (var action in jsonRoot.Actions)
+                ParsePlaylists(root, config.Emulators);
+                ParseEmulators(root, config.Emulators);
+            }
+
+            if (config?.Actions?.Any() ?? false)
+            {
+                ParseActions(root, config.Actions);
+            }
+            
+            // Quit should always be the last option.
+            root["Quit"] = new TreeNode() { OnSelect = new Action(() => { Environment.Exit(0); }) };
+            root[" "] = null;
+
+            // Make the documentation available from inside the program
+            root[" Setup Guide"] = new TreeNode() { OnSelect = new Action(() => { System.Diagnostics.Process.Start("Setup.html"); }) };
+            root[" Project Page"] = new TreeNode()
+            {
+                OnSelect = new Action(() => { System.Diagnostics.Process.Start("https://github.com/longjoel/MicroFE"); })
+            };
+            return root;
+        }
+
+        private static void ParseActions(TreeNode root, MicroFEAction[] actions)
+        {
+            if(actions.Any())
+            {
+                root["--Actions--"] = null;
+            }
+
+            foreach (var action in actions)
+            {
+                if (File.Exists(action.Path))
                 {
-                    if (File.Exists((string)action.Path))
+                    root[action.Name] = new TreeNode()
                     {
-                        root[(string)action.Name] = new TreeNode()
+                        OnSelect = new Action(() =>
                         {
-                            OnSelect = new Action(() =>
+                            var startInfo = new ProcessStartInfo()
                             {
-                                var startInfo = new ProcessStartInfo()
-                                {
-                                    Arguments = string.Join(" ", action.Args ?? ""),
-                                    FileName = action.Path,
-                                    WorkingDirectory = action.WorkingDirectory
-                                };
-                                Process.Start(startInfo);
-                            })
-                        };
-                    }
-                    else
-                    {
-                        root[(string)action.Name] = new TreeNode();
-                    }
+                                Arguments = string.Join(" ", action.Args ?? new List<string> { "" }),
+                                FileName = action.Path,
+                                WorkingDirectory = action.WorkingDirectory
+                            };
+                            Process.Start(startInfo);
+                        })
+                    };
                 }
-            }
-        }
-
-        private static void ParseEmulators(TreeNode root, dynamic jsonRoot)
-        {
-            if (jsonRoot.Emulators != null)
-            {
-
-                foreach (var emulator in jsonRoot.Emulators)
+                else
                 {
-                    root[(string)emulator.System] = new TreeNode() { };
-                    if (Directory.Exists((string)emulator.RomPath))
-                    {
-                        AddGames(root, emulator);
-
-                    }
-
+                    root[action.Name] = new TreeNode();
                 }
             }
         }
 
-        private static void ParsePlaylists(TreeNode root, dynamic jsonRoot)
+        private static void ParseEmulators(TreeNode root, Emulator[] emulators)
         {
-            if (jsonRoot.Emulators != null)
+
+            foreach (Emulator emulator in emulators)
             {
+                root["--Emulators--"] = null;
 
-                foreach (var emulator in jsonRoot.Emulators)
+                root[emulator.System] = new TreeNode() { };
+                if (Directory.Exists(emulator.RomPath))
                 {
-                    
-                    if (Directory.Exists((string)emulator.RomPath))
-                    {
-                        
-                        AddPlaylists(root, emulator);
-                    }
-
+                    AddGames(root, emulator);
                 }
             }
         }
 
-        private static void AddPlaylists(TreeNode root, dynamic emulator)
+        private static void ParsePlaylists(TreeNode root, Emulator[] emulators)
+        {
+            foreach (var emulator in emulators)
+            {
+                if (Directory.Exists(emulator.RomPath))
+                {
+                    AddPlaylists(root, emulator);
+                }
+            }
+        }
+
+        private static void AddPlaylists(TreeNode root, Emulator emulator)
         {
             var playlists = Directory.GetFiles(emulator.RomPath.ToString(), "*.txt");
+
+            // if there are any playlists found, add the playlist header.
+            if (playlists.Any())
+            {
+                root["--Playlists--"] = null;
+            }
 
             foreach (var pls in playlists)
             {
@@ -160,9 +114,7 @@ namespace MicroFE
 
                 List<string> playlistFiles = new List<string>();
                 foreach (var f in File.ReadAllLines(pls)) { playlistFiles.Add(f); }
-
-
-                var roms = playlistFiles.Select(x => Path.Combine((string)(emulator.RomPath), x)).ToList();
+                var roms = playlistFiles.Select(x => Path.Combine(emulator.RomPath, x)).ToList();
 
                 foreach (var r in roms)
                 {
@@ -178,31 +130,21 @@ namespace MicroFE
                         };
 
                         startInfo.Arguments = startInfo.Arguments.Replace("%ROM%", "\"" + r + "\"");
-
                         Program.RunningEmulator = Process.Start(startInfo);
                     });
-
                     newNode[Path.GetFileNameWithoutExtension(r)] = n;
-
                 }
-
             }
         }
 
-        private static void AddGames(TreeNode root, dynamic emulator)
+        private static void AddGames(TreeNode root, Emulator emulator)
         {
-            var filters = new List<string>();
-
-            foreach (var fx in emulator.RomFilter) filters.Add(fx.ToString());
-
-            var allFiles = Directory.GetFiles((string)emulator.RomPath);
-
-            var roms = filters.SelectMany(f => allFiles.Where(s => s.Contains(f)));
+            var allFiles = Directory.GetFiles(emulator.RomPath);
+            var roms = emulator.RomFilter.SelectMany(filter => allFiles.Where(rom => rom.Contains(filter)));
 
             foreach (var r in roms)
             {
                 var n = new TreeNode();
-
                 n.OnSelect = new Action(() =>
                 {
                     var startInfo = new ProcessStartInfo()
@@ -211,14 +153,11 @@ namespace MicroFE
                         FileName = "\"" + emulator.EmuPath + "\"",
                         WorkingDirectory = "\"" + emulator.WorkingDirectory + "\""
                     };
-
                     startInfo.Arguments = startInfo.Arguments.Replace("%ROM%", "\"" + r + "\"");
-
                     Program.RunningEmulator = Process.Start(startInfo);
                 });
 
-
-                root[(string)emulator.System][Path.GetFileNameWithoutExtension(r)] = n;
+                root[emulator.System][Path.GetFileNameWithoutExtension(r)] = n;
             }
         }
     }

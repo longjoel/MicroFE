@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Text;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace MicroFE
 {
@@ -280,7 +277,7 @@ namespace MicroFE
                         {
 
                             _backBufferContext.FillRectangle(GetBrush(_backColors[i]),
-                                new Rectangle((int)(i % TextCols) * CharWidth, (int)(i / TextCols) * CharHeight, CharWidth, CharHeight));
+                                new Rectangle(i % TextCols * CharWidth, i / TextCols * CharHeight, CharWidth, CharHeight));
                         }
 
                         if (_bufferColors[i] != default(Color) && _buffer[i] != default(char))

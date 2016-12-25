@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Input;
 using System.Drawing;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing.Imaging;
-using System.Diagnostics;
 
 namespace MicroFE
 {
@@ -42,9 +39,9 @@ namespace MicroFE
             _buffer = new TextBuffer();
             _nodePath = new List<TreeNode>();
 
-            _root = root; ConfigFileParser.ParseConfigFile("config.json");
+            _root = root;
 
-            _theme = theme; ConfigFileParser.ParseMenuTheme("config.json");
+            _theme = theme; 
 
             _menuStack = new List<TextMenu>();
             var tmView = new TextMenu(_buffer, 0, 0, TextBuffer.TextCols, TextBuffer.TextRows, "[Micro FE - Main Menu]", _theme)

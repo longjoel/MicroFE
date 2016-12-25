@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace MicroFE
@@ -19,10 +17,40 @@ namespace MicroFE
         [STAThread]
         static void Main()
         {
-            Settings = ConfigFileParser.ParseSettings("config.json");
+            TreeNode root = null;
+            MenuTheme theme = null;
 
-            TreeNode root  = ConfigFileParser.ParseConfigFile("config.json");
-            
+            if (System.IO.File.Exists("config.json"))
+            {
+
+                var settingsConfig = JsonConvert.DeserializeObject<MicroFEConfig>(System.IO.File.ReadAllText("config.json"));
+
+                Settings = new Settings() { QuitCombo = "L3+R3" };
+                root = ConfigFileParser.ParseConfigFile(settingsConfig);
+                theme = settingsConfig.Theme ?? new MenuTheme();
+            }
+
+            else
+            {
+                root = new TreeNode()
+                {
+                    ["config.json not found. See setup.html for help."] = new TreeNode()
+                    {
+                        OnSelect = new Action(() => { System.Diagnostics.Process.Start("Setup.html"); })
+                    },
+
+                    ["or go to https://github.com/longjoel/MicroFE"] = new TreeNode()
+                    {
+                        OnSelect = new Action(() => { System.Diagnostics.Process.Start("https://github.com/longjoel/MicroFE"); })
+                    },
+
+                    ["(Quit)"] = new TreeNode()
+                    {
+                        OnSelect = new Action(() => { Environment.Exit(0); })
+                    },
+                };
+            }
+
 
             if (root == null)
             {
@@ -35,18 +63,16 @@ namespace MicroFE
                 };
             }
 
-            var theme = ConfigFileParser.ParseMenuTheme("config.json");
+
 
             using (var viewWindow = new VideoWindow(root, theme)
             {
                 Title = "MicroFE",
-                WindowBorder = OpenTK.WindowBorder.Hidden,
+                //WindowBorder = OpenTK.WindowBorder.Hidden,
                 Bounds = Screen.PrimaryScreen.Bounds
-
-             
             })
             {
-                viewWindow.Run();
+                viewWindow.Run(15, 60);
             }
         }
     }
