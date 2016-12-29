@@ -1,4 +1,8 @@
 ﻿{
+  "Settings": {
+    "FullScreen": "True",
+    "QuitCombo": "L3+R3"
+  },
   "Theme": {
     "BackgroundColor": "Black",
     "BorderColor": "Green",
@@ -12,7 +16,6 @@
       "Name": "Launch RetroArch Gui",
       "Path": "C:/Games/Emulation/Emulators/retroarch/RetroArch.exe"
     }
-
   ],
   "Emulators": [
     {

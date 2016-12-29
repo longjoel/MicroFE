@@ -25,7 +25,7 @@ namespace MicroFE
 
                 var settingsConfig = JsonConvert.DeserializeObject<MicroFEConfig>(System.IO.File.ReadAllText("config.json"));
 
-                Settings = new Settings() { QuitCombo = "L3+R3" };
+                Settings = settingsConfig.Settings;
                 root = ConfigFileParser.ParseConfigFile(settingsConfig);
                 theme = settingsConfig.Theme ?? new MenuTheme();
             }
@@ -34,7 +34,7 @@ namespace MicroFE
             {
                 root = new TreeNode()
                 {
-                   
+
 
                     ["config.json not found. github.com/longjoel/MicroFE"] = new TreeNode()
                     {
@@ -65,7 +65,7 @@ namespace MicroFE
             using (var viewWindow = new VideoWindow(root, theme)
             {
                 Title = "MicroFE",
-                //WindowBorder = OpenTK.WindowBorder.Hidden,
+                WindowBorder = Settings.FullScreen ? OpenTK.WindowBorder.Hidden : OpenTK.WindowBorder.Resizable,
                 Bounds = Screen.PrimaryScreen.Bounds
             })
             {

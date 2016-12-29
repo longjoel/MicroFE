@@ -38,7 +38,7 @@ namespace MicroFE
             return root;
         }
 
-        private static void ParseActions(TreeNode root, MicroFEAction[] actions)
+        private static void ParseActions(TreeNode root, List<MicroFEAction> actions)
         {
             if(actions.Any())
             {
@@ -70,7 +70,7 @@ namespace MicroFE
             }
         }
 
-        private static void ParseEmulators(TreeNode root, Emulator[] emulators)
+        private static void ParseEmulators(TreeNode root, List<Emulator> emulators)
         {
 
             foreach (Emulator emulator in emulators)
@@ -85,7 +85,7 @@ namespace MicroFE
             }
         }
 
-        private static void ParsePlaylists(TreeNode root, Emulator[] emulators)
+        private static void ParsePlaylists(TreeNode root, List<Emulator> emulators)
         {
             foreach (var emulator in emulators)
             {
