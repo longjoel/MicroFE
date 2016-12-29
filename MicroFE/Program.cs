@@ -22,16 +22,37 @@ namespace MicroFE
 
             if (System.IO.File.Exists("config.json"))
             {
+                try
+                {
+                    var settingsConfig = JsonConvert.DeserializeObject<MicroFEConfig>(System.IO.File.ReadAllText("config.json"));
 
-                var settingsConfig = JsonConvert.DeserializeObject<MicroFEConfig>(System.IO.File.ReadAllText("config.json"));
+                    Settings = settingsConfig.Settings;
+                    root = ConfigFileParser.ParseConfigFile(settingsConfig);
+                    theme = settingsConfig.Theme ?? new MenuTheme();
+                }
+                catch
+                {
+                    Settings = new Settings();
+                    root = new TreeNode()
+                    {
 
-                Settings = settingsConfig.Settings;
-                root = ConfigFileParser.ParseConfigFile(settingsConfig);
-                theme = settingsConfig.Theme ?? new MenuTheme();
+
+                        ["config.json is not a valid json document. github.com/longjoel/MicroFE"] = new TreeNode()
+                        {
+                            OnSelect = new Action(() => { Process.Start("https://github.com/longjoel/MicroFE"); })
+                        },
+
+                        ["(Quit)"] = new TreeNode()
+                        {
+                            OnSelect = new Action(() => { Environment.Exit(0); })
+                        },
+                    };
+                }
             }
 
             else
             {
+                Settings = new Settings();
                 root = new TreeNode()
                 {
 

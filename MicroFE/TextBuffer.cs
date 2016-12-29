@@ -14,12 +14,12 @@ namespace MicroFE
         /// <summary>
         /// 
         /// </summary>
-        public const int TextCols = 60;
+        public int TextCols { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public const int TextRows = 20;
+        public int TextRows { get; set; }
 
         /// <summary>
         /// 
@@ -53,9 +53,9 @@ namespace MicroFE
         Font _windowFont;
 
 
-        char[] _buffer = new char[TextRows * TextCols];
-        Color[] _bufferColors = new Color[TextRows * TextCols];
-        Color[] _backColors = new Color[TextRows * TextCols];
+        char[] _buffer;
+        Color[] _bufferColors;
+        Color[] _backColors;
 
         /// <summary>
         /// Context Independent back buffer.
@@ -81,8 +81,15 @@ namespace MicroFE
         /// <summary>
         /// Figure out the width and height of the text. 
         /// </summary>
-        public TextBuffer()
+        public TextBuffer(int textCols, int textRows)
         {
+            TextRows = textRows;
+            TextCols = textCols;
+
+            _buffer = new char[TextRows * TextCols];
+            _bufferColors = new Color[TextRows * TextCols];
+            _backColors = new Color[TextRows * TextCols];
+
             _textFont = new Font(FontFamily.GenericMonospace, 16, FontStyle.Bold, GraphicsUnit.Pixel);
             _windowFont = new Font(FontFamily.GenericMonospace, 32, FontStyle.Bold, GraphicsUnit.Pixel);
 
@@ -156,7 +163,7 @@ namespace MicroFE
                     using (var ctx = Graphics.FromImage(b))
                     {
                         ctx.TextRenderingHint = TextRenderingHint.SingleBitPerPixelGridFit;
-                        ctx.DrawString(c.ToString(), _windowFont, GetBrush(color), -8,-10, sf);
+                        ctx.DrawString(c.ToString(), _windowFont, GetBrush(color), -8, -10, sf);
                     }
                 }
 

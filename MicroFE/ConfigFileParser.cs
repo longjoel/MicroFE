@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Diagnostics;
+using System.Windows.Forms;
+
 namespace MicroFE
 {
     /// <summary>
@@ -14,7 +16,7 @@ namespace MicroFE
         public static TreeNode ParseConfigFile(MicroFEConfig config)
         {
             var root = new TreeNode();
-            
+
             if (config?.Emulators?.Any() ?? false)
             {
                 ParsePlaylists(root, config.Emulators);
@@ -25,7 +27,7 @@ namespace MicroFE
             {
                 ParseActions(root, config.Actions);
             }
-            
+
             // Quit should always be the last option.
             root["Quit"] = new TreeNode() { OnSelect = new Action(() => { Environment.Exit(0); }) };
             root[" "] = null;
@@ -40,7 +42,7 @@ namespace MicroFE
 
         private static void ParseActions(TreeNode root, List<MicroFEAction> actions)
         {
-            if(actions.Any())
+            if (actions.Any())
             {
                 root["--Actions--"] = null;
             }
@@ -56,10 +58,18 @@ namespace MicroFE
                             var startInfo = new ProcessStartInfo()
                             {
                                 Arguments = string.Join(" ", action.Args ?? new List<string> { "" }),
-                                FileName = action.Path,
-                                WorkingDirectory = action.WorkingDirectory
+                                FileName = "\"" + Path.GetFullPath(action.Path) + "\"",
+                                WorkingDirectory = "\"" + Path.GetFullPath(action?.WorkingDirectory ?? Path.GetDirectoryName(action.Path)) + "\""
                             };
-                            Process.Start(startInfo);
+
+                            try
+                            {
+                                Program.RunningEmulator = Process.Start(startInfo);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(startInfo.FileName + ex.Message);
+                            }
                         })
                     };
                 }
@@ -78,7 +88,7 @@ namespace MicroFE
                 root["--Emulators--"] = null;
 
                 root[emulator.System] = new TreeNode() { };
-                if (Directory.Exists(emulator.RomPath))
+                if (Directory.Exists(Path.GetFullPath(emulator.RomPath)))
                 {
                     AddGames(root, emulator);
                 }
@@ -124,12 +134,20 @@ namespace MicroFE
                         var startInfo = new ProcessStartInfo()
                         {
                             Arguments = string.Join(" ", emulator.EmuArgs),
-                            FileName = "\"" + emulator.EmuPath + "\"",
-                            WorkingDirectory = "\"" + emulator.WorkingDirectory + "\""
+                            FileName = "\"" + Path.GetFullPath(emulator.EmuPath) + "\"",
+                            WorkingDirectory = "\"" + Path.GetFullPath(emulator.WorkingDirectory) + "\""
                         };
 
-                        startInfo.Arguments = startInfo.Arguments.Replace("%ROM%", "\"" + r + "\"");
-                        Program.RunningEmulator = Process.Start(startInfo);
+                        startInfo.Arguments = startInfo.Arguments.Replace("%ROM%", "\"" + Path.GetFullPath(r) + "\"");
+
+                        try
+                        {
+                            Program.RunningEmulator = Process.Start(startInfo);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(startInfo.FileName + ex.Message);
+                        }
                     });
                     newNode[Path.GetFileNameWithoutExtension(r)] = n;
                 }
@@ -149,11 +167,20 @@ namespace MicroFE
                     var startInfo = new ProcessStartInfo()
                     {
                         Arguments = string.Join(" ", emulator.EmuArgs),
-                        FileName = "\"" + emulator.EmuPath + "\"",
-                        WorkingDirectory = "\"" + emulator.WorkingDirectory + "\""
+                        FileName = "\"" + Path.GetFullPath(emulator.EmuPath) + "\"",
+                        WorkingDirectory = "\"" + Path.GetFullPath(emulator.WorkingDirectory) + "\""
                     };
-                    startInfo.Arguments = startInfo.Arguments.Replace("%ROM%", "\"" + r + "\"");
-                    Program.RunningEmulator = Process.Start(startInfo);
+
+                    startInfo.Arguments = startInfo.Arguments.Replace("%ROM%", "\"" + Path.GetFullPath(r) + "\"");
+
+                    try
+                    {
+                        Program.RunningEmulator = Process.Start(startInfo);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(startInfo.FileName + ex.Message);
+                    }
                 });
 
                 root[emulator.System][Path.GetFileNameWithoutExtension(r)] = n;

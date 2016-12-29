@@ -36,7 +36,7 @@ namespace MicroFE
         {
 
 
-            _buffer = new TextBuffer();
+            _buffer = new TextBuffer(Program.Settings.Cols, Program.Settings.Rows);
             _nodePath = new List<TreeNode>();
 
             _root = root;
@@ -44,7 +44,7 @@ namespace MicroFE
             _theme = theme; 
 
             _menuStack = new List<TextMenu>();
-            var tmView = new TextMenu(_buffer, 0, 0, TextBuffer.TextCols, TextBuffer.TextRows, "[Micro FE - Main Menu]", _theme)
+            var tmView = new TextMenu(_buffer, 0, 0, _buffer.TextCols, _buffer.TextRows, "[Micro FE - Main Menu]", _theme)
             {
                 Items = _root.Keys.ToArray(),
                 SelectedIndex = 0,
@@ -192,8 +192,8 @@ namespace MicroFE
                 var tm = new TextMenu(_buffer,
                     _nodePath.Count + 1,
                     0,
-                    TextBuffer.TextCols - _nodePath.Count - 1,
-                    TextBuffer.TextRows,
+                    _buffer.TextCols - _nodePath.Count - 1,
+                    _buffer.TextRows,
                     currentMenu.Items[currentMenu.SelectedIndex], _theme);
                 tm.Items = nextNode.Keys.ToArray();
                 _menuStack.Add(tm);
@@ -210,7 +210,6 @@ namespace MicroFE
         protected override void OnLoad(EventArgs e)
         {
             _backBuffer = new Bitmap(this.Width, this.Height);
-            _textBuffer = new TextBuffer();
 
             GL.GenTextures(1, out _textureHandle);
             GL.BindTexture(TextureTarget.Texture2D, _textureHandle);
