@@ -123,7 +123,7 @@ namespace MicroFE
 
                 List<string> playlistFiles = new List<string>();
                 foreach (var f in File.ReadAllLines(pls)) { playlistFiles.Add(f); }
-                var roms = playlistFiles.Select(x => Path.Combine(emulator.RomPath, x)).ToList();
+                var roms = playlistFiles.Select(x => Path.Combine(emulator.RomPath, x)).OrderBy(x => x);
 
                 foreach (var r in roms)
                 {
@@ -157,7 +157,7 @@ namespace MicroFE
         private static void AddGames(TreeNode root, Emulator emulator)
         {
             var allFiles = Directory.GetFiles(emulator.RomPath);
-            var roms = emulator.RomFilter.SelectMany(filter => allFiles.Where(rom => rom.Contains(filter)));
+            var roms = emulator.RomFilter.SelectMany(filter => allFiles.Where(rom => rom.Contains(filter))).OrderBy(x => x);
 
             foreach (var r in roms)
             {
